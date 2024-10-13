@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dibuja tu Firma</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        canvas {
+            border: 2px solid #000;
+        }
+        #clear-btn, #download-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #00796B;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        #clear-btn:hover, #download-btn:hover {
+            background-color: #004d40;
+        }
+    </style>
+</head>
+<body>
+    <h2>Dibuja tu Firma</h2>
+    <canvas id="signature-pad" width="500" height="200"></canvas>
+    <div>
+        <button id="clear-btn">Borrar</button>
+        <button id="download-btn">Descargar</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('signature-pad');
+        const ctx = canvas.getContext('2d');
+        ctx.lineWidth = 2; // Grosor del pincel ajustable
+        ctx.lineJoin = ctx.lineCap = 'round'; // Esquinas y bordes redondeados
+        ctx.shadowBlur = 1; // Desenfoque de sombra para suavizar el trazo
+        ctx.shadowColor = 'black'; // Color de la sombra
+        let isDrawing = false;
+
+        canvas.addEventListener('mousedown', (event) => {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+        });
+
+        canvas.addEventListener('mousemove', (event) => {
+            if (isDrawing) {
+                ctx.lineTo(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop);
+                ctx.stroke();
+            }
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+
+        document.getElementById('clear-btn').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        });
+
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'firma.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>
