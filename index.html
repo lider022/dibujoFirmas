@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dibuja tu Firma</title>
     <style>
@@ -45,11 +45,19 @@
     <script>
         const canvas = document.getElementById('signature-pad');
         const ctx = canvas.getContext('2d');
-        ctx.lineWidth = 2; // Grosor del pincel ajustable
-        ctx.lineJoin = ctx.lineCap = 'round'; // Esquinas y bordes redondeados
-        ctx.shadowBlur = 1; // Desenfoque de sombra para suavizar el trazo
-        ctx.shadowColor = 'black'; // Color de la sombra
+        ctx.lineWidth = 2;
+        ctx.lineJoin = ctx.lineCap = 'round';
+        ctx.shadowBlur = 1;
+        ctx.shadowColor = 'black';
         let isDrawing = false;
+
+        const getTouchPos = (canvas, touchEvent) => {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: touchEvent.touches[0].clientX - rect.left,
+                y: touchEvent.touches[0].clientY - rect.top
+            };
+        };
 
         canvas.addEventListener('mousedown', (event) => {
             isDrawing = true;
@@ -69,6 +77,27 @@
         });
 
         canvas.addEventListener('mouseleave', () => {
+            isDrawing = false;
+        });
+
+        canvas.addEventListener('touchstart', (event) => {
+            isDrawing = true;
+            const pos = getTouchPos(canvas, event);
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            event.preventDefault();
+        });
+
+        canvas.addEventListener('touchmove', (event) => {
+            if (isDrawing) {
+                const pos = getTouchPos(canvas, event);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+            event.preventDefault();
+        });
+
+        canvas.addEventListener('touchend', () => {
             isDrawing = false;
         });
 
